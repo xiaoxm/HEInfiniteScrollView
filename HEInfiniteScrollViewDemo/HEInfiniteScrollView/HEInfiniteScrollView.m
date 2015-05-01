@@ -28,8 +28,11 @@
 //用户拖动瞬间scrollView的contentOffset.x
 @property (nonatomic, assign) CGFloat beginDragOffsetX;
 
+
 @property (nonatomic, strong) NSTimer *timer;
-@property (nonatomic, assign) __block BOOL isScrolling;//是否正在滑动
+
+//是否正在滑动中
+@property (nonatomic, assign) __block BOOL isScrolling;
 
 @end
 
@@ -105,6 +108,7 @@
     _scrollView.delegate = self;
     _scrollView.pagingEnabled = YES;
     _scrollView.showsHorizontalScrollIndicator = NO;
+    _scrollView.bounces = NO;
     
     //初始化仨imageView
     for(int i=0; i<3; i++){
@@ -191,7 +195,7 @@
 -(void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
     
     //滑动中状态清除
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         _isScrolling = NO;
     });
     
