@@ -35,7 +35,6 @@
 
 @implementation HEInfiniteScrollView
 
-
 - (instancetype)initWithFrame:(CGRect)frame{
     if(self = [super initWithFrame:frame]){
         [self commonInit];
@@ -53,6 +52,7 @@
 - (void)layoutSubviews{
     [super layoutSubviews];
 
+    //scrollView 尺寸相关
     _scrollView.frame = self.bounds;
     
     CGFloat scrollViewW = _scrollView.frame.size.width;
@@ -61,6 +61,8 @@
     _scrollView.contentSize = CGSizeMake(3 * scrollViewW, 0);
     _scrollView.contentOffset = CGPointMake(scrollViewW, 0);
     
+    
+    //三个imageView
     CGFloat cViewX = scrollViewW;
     CGFloat lViewX = cViewX - scrollViewW;
     CGFloat rViewX = cViewX + scrollViewW;
@@ -69,6 +71,7 @@
     _leftView.frame     = CGRectMake(lViewX, 0, scrollViewW, scrollViewH);
     _rightView.frame    = CGRectMake(rViewX, 0, scrollViewW, scrollViewH);
     
+    //pageControl
     CGSize pageControlS = [_pageControl sizeForNumberOfPages:_pageControl.numberOfPages];
     CGFloat pageControlY = scrollViewH - pageControlS.height - _pageControlOffset.vertical;
     CGFloat pageControlX = scrollViewW - pageControlS.width - _pageControlOffset.horizontal;
@@ -95,6 +98,7 @@
 #pragma mark 公有初始化方法
 - (void)commonInit{
     
+    //初始化scrollView
     UIScrollView *scrollView = [[UIScrollView alloc] init];
     [self addSubview:scrollView];
     _scrollView = scrollView;
@@ -102,11 +106,13 @@
     _scrollView.pagingEnabled = YES;
     _scrollView.showsHorizontalScrollIndicator = NO;
     
+    //初始化仨imageView
     for(int i=0; i<3; i++){
         HEImageView *imageView = [[HEImageView alloc] init];
         imageView.contentMode = UIViewContentModeScaleAspectFill;
         imageView.userInteractionEnabled = YES;
-        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapImageView:)];
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]
+                                       initWithTarget:self action:@selector(tapImageView:)];
         [imageView addGestureRecognizer:tap];
         [_scrollView addSubview:imageView];
         
@@ -118,13 +124,15 @@
         }
     }
 
-    
+    //初始化pageControl
     UIPageControl *pageControl = [[UIPageControl alloc] init];
     [self addSubview:pageControl];
     _pageControl = pageControl;
     
+    //默认右下角偏移量
     _pageControlOffset = UIOffsetMake(10, -5);
     
+    //开启自动滚动
     _timer = [NSTimer scheduledTimerWithTimeInterval:kTimeInterval
                                               target:self
                                             selector:@selector(autoScroll)
@@ -150,12 +158,15 @@
     if(_isScrolling) return;
 
     [UIView animateWithDuration:kAnimateDuration animations:^{
+        _scrollView.userInteractionEnabled = NO;
         
         _beginDragOffsetX = _scrollView.contentOffset.x;
         CGFloat offsetX = _scrollView.contentOffset.x + _scrollView.frame.size.width;
         [_scrollView setContentOffset:CGPointMake(offsetX, 0)];
         
     } completion:^(BOOL finished) {
+        _scrollView.userInteractionEnabled = YES;
+        
         [self scrollViewDidEndDecelerating:_scrollView];
     }];
     
@@ -179,12 +190,12 @@
 //已经停止滚动
 -(void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    //滑动中状态清除
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         _isScrolling = NO;
     });
     
-    
-    
+
     CGFloat offsetX = scrollView.contentOffset.x;
     
     if(ABS(offsetX - _beginDragOffsetX) >= scrollView.bounds.size.width){
@@ -213,6 +224,7 @@
     if(!_contentObjs.count) return;
     
     _pageControl.numberOfPages = _contentObjs.count;
+    
     self.currPage = 0;
 }
 
