@@ -10,6 +10,9 @@
 
 @class HEInfiniteScrollView;
 
+#define kTimeInterval 2.5
+#define kAnimateDuration 0.5
+
 @protocol HEInfiniteScrollViewDelegate <NSObject>
 
 @optional

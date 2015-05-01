@@ -28,6 +28,9 @@
 //用户拖动瞬间scrollView的contentOffset.x
 @property (nonatomic, assign) CGFloat beginDragOffsetX;
 
+@property (nonatomic, strong) NSTimer *timer;
+@property (nonatomic, assign) __block BOOL isScrolling;//是否正在滑动
+
 @end
 
 @implementation HEInfiniteScrollView
@@ -121,6 +124,12 @@
     _pageControl = pageControl;
     
     _pageControlOffset = UIOffsetMake(10, -5);
+    
+    _timer = [NSTimer scheduledTimerWithTimeInterval:kTimeInterval
+                                              target:self
+                                            selector:@selector(autoScroll)
+                                            userInfo:nil
+                                             repeats:YES];
 }
 
 #pragma mark 防止下标越界
@@ -136,10 +145,28 @@
     return index;
 }
 
+#pragma mark 自动滚动
+- (void)autoScroll{
+    if(_isScrolling) return;
+
+    [UIView animateWithDuration:kAnimateDuration animations:^{
+        
+        _beginDragOffsetX = _scrollView.contentOffset.x;
+        CGFloat offsetX = _scrollView.contentOffset.x + _scrollView.frame.size.width;
+        [_scrollView setContentOffset:CGPointMake(offsetX, 0)];
+        
+    } completion:^(BOOL finished) {
+        [self scrollViewDidEndDecelerating:_scrollView];
+    }];
+    
+}
+
 #pragma mark - UIScrollViewDelegate
 //将要开始拖拽，手指已经放在view上并准备拖动的那一刻
 -(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
     _beginDragOffsetX = scrollView.contentOffset.x;
+    
+    _isScrolling = YES;
 }
 //已经结束拖拽，手指刚离开view的那一刻
 -(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
@@ -151,6 +178,12 @@
 
 //已经停止滚动
 -(void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        _isScrolling = NO;
+    });
+    
+    
     
     CGFloat offsetX = scrollView.contentOffset.x;
     
