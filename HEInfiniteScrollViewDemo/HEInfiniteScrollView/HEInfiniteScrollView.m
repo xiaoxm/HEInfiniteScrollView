@@ -9,6 +9,13 @@
 #import "HEInfiniteScrollView.h"
 #import "HEImageView.h"
 
+
+typedef NS_ENUM(NSInteger, HEOrientationDragging){
+    kHEOrientationDraggingLeft = 0, //朝左(default)
+    kHEOrientationDraggingRight,    //朝右
+};
+
+
 @interface HEInfiniteScrollView()<UIScrollViewDelegate>
 
 //NSURL or UIImage
@@ -22,17 +29,20 @@
 @property (nonatomic, weak) HEImageView *leftView;
 @property (nonatomic, weak) HEImageView *rightView;
 
-//当前页
+//当前页码
 @property (nonatomic, assign) int currPage;
 
 //用户拖动瞬间scrollView的contentOffset.x
 @property (nonatomic, assign) CGFloat beginDragOffsetX;
 
-
+//自动切换定时器
 @property (nonatomic, strong) NSTimer *timer;
 
 //是否正在滑动中
 @property (nonatomic, assign) __block BOOL isScrolling;
+
+//
+@property (nonatomic, weak) UIPageControl *pageControl;
 
 @end
 
@@ -59,10 +69,22 @@
     _scrollView.frame = self.bounds;
     
     CGFloat scrollViewW = _scrollView.frame.size.width;
-    CGFloat scrollViewH = _scrollView.frame.size.height;
+//    CGFloat scrollViewH = _scrollView.frame.size.height;
     
     _scrollView.contentSize = CGSizeMake(3 * scrollViewW, 0);
     _scrollView.contentOffset = CGPointMake(scrollViewW, 0);
+    
+    
+    [self layoutContetImageViews];
+    
+    [self layoutPageControl];
+}
+
+- (void)layoutContetImageViews{
+    CGFloat scrollViewW = _scrollView.frame.size.width;
+    CGFloat scrollViewH = _scrollView.frame.size.height;
+    
+    CGFloat offsetX = _scrollView.contentOffset.x;
     
     
     //三个imageView
@@ -70,15 +92,48 @@
     CGFloat lViewX = cViewX - scrollViewW;
     CGFloat rViewX = cViewX + scrollViewW;
     
+    if(_switchType == kHESwitchTypeFadeOut){
+        cViewX = offsetX;
+        lViewX = offsetX;
+        rViewX = offsetX;
+    }
+    
+    
     _centerView.frame   = CGRectMake(cViewX, 0, scrollViewW, scrollViewH);
     _leftView.frame     = CGRectMake(lViewX, 0, scrollViewW, scrollViewH);
     _rightView.frame    = CGRectMake(rViewX, 0, scrollViewW, scrollViewH);
+
     
-    //pageControl
+}
+
+
+- (void)layoutPageControl{
+    
+    CGFloat scrollViewW = _scrollView.frame.size.width;
+    CGFloat scrollViewH = _scrollView.frame.size.height;
+    
     CGSize pageControlS = [_pageControl sizeForNumberOfPages:_pageControl.numberOfPages];
-    CGFloat pageControlY = scrollViewH - pageControlS.height - _pageControlOffset.vertical;
-    CGFloat pageControlX = scrollViewW - pageControlS.width - _pageControlOffset.horizontal;
+    
+    CGFloat pageControlX = 0;
+    switch (_pageControlContentMode) {
+        case kHEPageControlContentModeBottomLeft:
+            pageControlX = _pageControlOffset.horizontal;
+            
+            break;
+        case kHEPageControlContentModeBottomCenter:
+            pageControlX = (scrollViewW - pageControlS.width) * 0.5;
+            
+            break;
+        case kHEPageControlContentModeBottomRight:
+            pageControlX = scrollViewW - pageControlS.width - _pageControlOffset.horizontal;
+            
+            break;
+        default: break;
+    }
+    
+    CGFloat pageControlY = scrollViewH - pageControlS.height + _pageControlOffset.vertical;
     _pageControl.frame = (CGRect){(CGPoint){pageControlX, pageControlY}, pageControlS};
+    
 }
 
 #pragma mark - action
@@ -128,13 +183,15 @@
         }
     }
 
+
     //初始化pageControl
     UIPageControl *pageControl = [[UIPageControl alloc] init];
     [self addSubview:pageControl];
     _pageControl = pageControl;
-    
+
     //默认右下角偏移量
-    _pageControlOffset = UIOffsetMake(10, -5);
+    _pageControlOffset = UIOffsetMake(10, 5);
+    
     
     //开启自动滚动
     _timer = [NSTimer scheduledTimerWithTimeInterval:kTimeInterval
@@ -146,6 +203,7 @@
 
 #pragma mark 防止下标越界
 - (int)indexPretreatment:(int)index{
+    if(!_contentObjs.count) return 0;
     
     if(index < 0){
         index = (int)_contentObjs.count - 1;
@@ -177,6 +235,34 @@
 }
 
 #pragma mark - UIScrollViewDelegate
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
+
+    if(_switchType == kHESwitchTypeFadeOut){
+        
+        CGFloat scrollViewW = _scrollView.frame.size.width;
+        CGFloat offsetX = scrollView.contentOffset.x;
+        
+        CGFloat percent = ABS((offsetX - scrollViewW)) / scrollViewW;
+        _centerView.alpha = 1 - percent;
+        
+        if(offsetX > _beginDragOffsetX){//下一张
+            [_scrollView bringSubviewToFront:_rightView];
+            
+        }else if(offsetX < _beginDragOffsetX){
+            [_scrollView bringSubviewToFront:_leftView];
+        }
+        
+        [_scrollView bringSubviewToFront:_centerView];
+        
+        
+        [self layoutContetImageViews];
+    }
+    
+    
+}
+
+
+
 //将要开始拖拽，手指已经放在view上并准备拖动的那一刻
 -(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
     _beginDragOffsetX = scrollView.contentOffset.x;

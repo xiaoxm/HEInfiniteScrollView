@@ -13,6 +13,20 @@
 #define kTimeInterval 2.5
 #define kAnimateDuration 0.5
 
+
+typedef NS_ENUM(NSInteger, HESwitchType){
+    kHESwitchTypeLandscape = 0,   //横向(default)
+//    kHESwitchTypePortrait,        //纵向
+    kHESwitchTypeFadeOut,            //淡出
+};
+
+typedef NS_ENUM(NSInteger, HEPageControlContentMode){
+    kHEPageControlContentModeBottomRight = 0,   //右下角(default)
+    kHEPageControlContentModeBottomLeft,        //左下角
+    kHEPageControlContentModeBottomCenter,      //底部居中
+};
+
+
 @protocol HEInfiniteScrollViewDelegate <NSObject>
 
 @optional
@@ -22,9 +36,10 @@
 
 @interface HEInfiniteScrollView : UIView
 
-//
-@property (nonatomic, weak) UIPageControl *pageControl;
-@property (nonatomic, assign) UIOffset pageControlOffset;//default (10,-5)
+@property (nonatomic, assign) HESwitchType switchType;//切换效果
+
+@property (nonatomic, assign) HEPageControlContentMode pageControlContentMode;
+@property (nonatomic, assign) UIOffset pageControlOffset;//default is (10,5)
 
 @property (nonatomic, weak) id<HEInfiniteScrollViewDelegate> delegate;
 

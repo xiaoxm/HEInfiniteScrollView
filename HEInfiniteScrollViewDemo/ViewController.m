@@ -34,9 +34,12 @@
     
     
     {
-        HEInfiniteScrollView *infiniteScrollView = [[HEInfiniteScrollView alloc] initWithFrame:CGRectMake(0, 300, self.view.frame.size.width, 200)];
+        HEInfiniteScrollView *infiniteScrollView = [[HEInfiniteScrollView alloc] initWithFrame:CGRectMake(0, 228, self.view.frame.size.width, 200)];
         [self.view addSubview:infiniteScrollView];
         [infiniteScrollView setContentObjs:images Placeholder:[UIImage imageNamed:@"placeholder.jpg"]];
+        infiniteScrollView.pageControlContentMode = kHEPageControlContentModeBottomCenter;
+        infiniteScrollView.switchType = kHESwitchTypeFadeOut;
+        infiniteScrollView.delegate = self;
     }
 
 }

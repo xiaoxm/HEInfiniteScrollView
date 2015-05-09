@@ -12,6 +12,8 @@
 @implementation HEImageView
 
 - (void)setContentObj:(id)contentObj{
+//    return;
+    
     if([contentObj isKindOfClass:[UIImage class]]){
         self.image = contentObj;
         
