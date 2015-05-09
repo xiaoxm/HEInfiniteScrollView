@@ -81,6 +81,7 @@ typedef NS_ENUM(NSInteger, HEOrientationDragging){
 }
 
 - (void)layoutContetImageViews{
+    
     CGFloat scrollViewW = _scrollView.frame.size.width;
     CGFloat scrollViewH = _scrollView.frame.size.height;
     
@@ -98,12 +99,10 @@ typedef NS_ENUM(NSInteger, HEOrientationDragging){
         rViewX = offsetX;
     }
     
-    
     _centerView.frame   = CGRectMake(cViewX, 0, scrollViewW, scrollViewH);
     _leftView.frame     = CGRectMake(lViewX, 0, scrollViewW, scrollViewH);
     _rightView.frame    = CGRectMake(rViewX, 0, scrollViewW, scrollViewH);
 
-    
 }
 
 
@@ -138,6 +137,7 @@ typedef NS_ENUM(NSInteger, HEOrientationDragging){
 
 #pragma mark - action
 - (void)tapImageView:(UIGestureRecognizer *)recognizer{
+    //代理传递事件
     if([_delegate respondsToSelector:@selector(infiniteScrollView:ItemOnclick:)]){
         [_delegate infiniteScrollView:self ItemOnclick:_currPage];
     }
@@ -194,6 +194,11 @@ typedef NS_ENUM(NSInteger, HEOrientationDragging){
     
     
     //开启自动滚动
+    [self setupTimer];
+}
+
+- (void)setupTimer{
+    [_timer invalidate];
     _timer = [NSTimer scheduledTimerWithTimeInterval:kTimeInterval
                                               target:self
                                             selector:@selector(autoScroll)
@@ -275,6 +280,8 @@ typedef NS_ENUM(NSInteger, HEOrientationDragging){
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         scrollView.userInteractionEnabled = YES;
     });
+    
+    [self setupTimer];
 }
 
 //已经停止滚动
@@ -334,6 +341,11 @@ typedef NS_ENUM(NSInteger, HEOrientationDragging){
     _centerView.contentObj = _contentObjs[centerIndex];
     _leftView.contentObj = _contentObjs[leftIndex];
     _rightView.contentObj = _contentObjs[rightIndex];
+    
+    //通知代理
+    if([_delegate respondsToSelector:@selector(infiniteScrollView:DidFlipOver:)]){
+        [_delegate infiniteScrollView:self DidFlipOver:_currPage];
+    }
 }
 @end
 

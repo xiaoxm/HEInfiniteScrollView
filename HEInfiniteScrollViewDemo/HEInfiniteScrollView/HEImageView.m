@@ -12,6 +12,9 @@
 @implementation HEImageView
 
 - (void)setContentObj:(id)contentObj{
+    [self.subviews enumerateObjectsUsingBlock:^(UIView *child, NSUInteger idx, BOOL *stop) {
+        [child removeFromSuperview];
+    }];
 //    return;
     
     if([contentObj isKindOfClass:[UIImage class]]){
@@ -21,6 +24,9 @@
         [self sd_setImageWithURL:contentObj
                 placeholderImage:_placeholder
                          options:SDWebImageRetryFailed | SDWebImageContinueInBackground];
+        
+    }else if ([contentObj isKindOfClass:[UIView class]]){
+        [self addSubview:contentObj];
     }
 }
 

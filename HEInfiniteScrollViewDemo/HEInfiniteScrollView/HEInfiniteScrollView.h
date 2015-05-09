@@ -10,14 +10,14 @@
 
 @class HEInfiniteScrollView;
 
-#define kTimeInterval 2.5
-#define kAnimateDuration 0.5
+#define kTimeInterval 2.5       //自动翻页时间间隔
+#define kAnimateDuration 0.5    //翻页动效持续时间
 
 
 typedef NS_ENUM(NSInteger, HESwitchType){
-    kHESwitchTypeLandscape = 0,   //横向(default)
-//    kHESwitchTypePortrait,        //纵向
-    kHESwitchTypeFadeOut,            //淡出
+    kHESwitchTypeLandscape = 0, //横向(default)
+//    kHESwitchTypePortrait,      //纵向
+    kHESwitchTypeFadeOut,       //淡出
 };
 
 typedef NS_ENUM(NSInteger, HEPageControlContentMode){
@@ -32,6 +32,9 @@ typedef NS_ENUM(NSInteger, HEPageControlContentMode){
 @optional
 //点击图片时调用
 - (void)infiniteScrollView:(HEInfiniteScrollView *)infiniteScrollView ItemOnclick:(NSUInteger)index;
+//翻页完成时调用
+- (void)infiniteScrollView:(HEInfiniteScrollView *)infiniteScrollView DidFlipOver:(NSUInteger)pageNum;
+
 @end
 
 @interface HEInfiniteScrollView : UIView
