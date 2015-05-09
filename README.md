@@ -3,7 +3,7 @@ HEInfiniteScrollView
 
 一个简单的图片轮播器
 
-![(App01)](http://i1.tietuku.com/df4a1ae5fd3f0605.gif)
+<img width=300 src="http://i1.tietuku.com/df4a1ae5fd3f0605.gif"/>
 
 
 怎么用？
