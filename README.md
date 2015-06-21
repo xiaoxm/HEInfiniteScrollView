@@ -3,7 +3,7 @@ HEInfiniteScrollView
 
 一个简单的图片轮播器，支持左右滑动轮播及渐变式切换两种工作方式。
 
-<img width=300 src="http://i1.tietuku.com/df4a1ae5fd3f0605.gif"/>
+<img width=300 src="http://i4.tietuku.com/36498a4199ff3177.gif"/>
 
 
 怎么用？
