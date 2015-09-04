@@ -41,6 +41,7 @@ typedef NS_ENUM(NSInteger, HEPageControlContentMode){
 
 @property (nonatomic, assign) HESwitchType switchType;//切换效果
 
+
 @property (nonatomic, assign) HEPageControlContentMode pageControlContentMode;
 @property (nonatomic, assign) UIOffset pageControlOffset;//default is (10,5)
 

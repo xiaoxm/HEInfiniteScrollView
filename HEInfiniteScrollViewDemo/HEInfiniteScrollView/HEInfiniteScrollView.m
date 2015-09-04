@@ -9,13 +9,6 @@
 #import "HEInfiniteScrollView.h"
 #import "HEImageView.h"
 
-
-typedef NS_ENUM(NSInteger, HEOrientationDragging){
-    kHEOrientationDraggingLeft = 0, //朝左(default)
-    kHEOrientationDraggingRight,    //朝右
-};
-
-
 @interface HEInfiniteScrollView()<UIScrollViewDelegate>
 
 //NSURL or UIImage
@@ -281,6 +274,7 @@ typedef NS_ENUM(NSInteger, HEOrientationDragging){
         scrollView.userInteractionEnabled = YES;
     });
     
+    //重置定时器
     [self setupTimer];
 }
 
