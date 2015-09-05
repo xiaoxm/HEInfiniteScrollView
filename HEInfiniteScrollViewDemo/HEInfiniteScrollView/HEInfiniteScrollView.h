@@ -39,15 +39,22 @@ typedef NS_ENUM(NSInteger, HEPageControlContentMode){
 
 @interface HEInfiniteScrollView : UIView
 
-@property (nonatomic, assign) HESwitchType switchType;//切换效果
+/** 切换效果 */
+@property (nonatomic, assign) HESwitchType switchType;
 
-
+/** pageControl位置 */
 @property (nonatomic, assign) HEPageControlContentMode pageControlContentMode;
-@property (nonatomic, assign) UIOffset pageControlOffset;//default is (10,5)
+/** pageControl位置微调 default is (10,5) */
+@property (nonatomic, assign) UIOffset pageControlOffset;
 
+/** 代理 */
 @property (nonatomic, weak) id<HEInfiniteScrollViewDelegate> delegate;
 
-// UIImage or NSURL
+/** 
+ *  设置滚动图内容
+ *  contentObjs: UIImage、NSURL、UIView
+ *  placeholder: 默认占位图
+ */
 - (void)setContentObjs:(NSArray *)contentObjs Placeholder:(UIImage *)placeholder;
 
 @end

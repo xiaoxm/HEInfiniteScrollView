@@ -12,10 +12,12 @@
 @implementation HEImageView
 
 - (void)setContentObj:(id)contentObj{
+    _contentObj = contentObj;
+    
     [self.subviews enumerateObjectsUsingBlock:^(UIView *child, NSUInteger idx, BOOL *stop) {
         [child removeFromSuperview];
     }];
-//    return;
+
     
     if([contentObj isKindOfClass:[UIImage class]]){
         self.image = contentObj;
